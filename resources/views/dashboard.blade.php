@@ -1,58 +1,44 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('adminlte::page')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+@section('title', 'Dashboard')
+@section('content_header')
+    <h1>Dashboard Akademik</h1>
+@stop
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
+@section('content')
+    @if (session('status'))
+        <x-adminlte-alert theme="success" title="Berhasil">{{ session('status') }}</x-adminlte-alert>
+    @endif
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                        {{ __('My Agentic AI Projects') }}
-                    </h3>
-
-                    @if ($projects->isEmpty())
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('You have no projects yet.') }}
-                        </p>
-                    @else
-                        <div class="space-y-4">
-                            @foreach ($projects as $project)
-                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                                    <div class="flex items-start justify-between gap-4">
-                                        <h4 class="font-semibold text-gray-900 dark:text-gray-100">
-                                            {{ $project->judul }}
-                                        </h4>
-                                        <span class="shrink-0 text-xs font-medium px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                            {{ $project->tema_agent }}
-                                        </span>
-                                    </div>
-
-                                    @if ($project->deskripsi)
-                                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                            {{ $project->deskripsi }}
-                                        </p>
-                                    @endif
-
-                                    <p class="mt-3 text-xs text-gray-400 dark:text-gray-500">
-                                        {{ __('Created') }}: {{ $project->created_at->diffForHumans() }}
-                                    </p>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-
+    <div class="row">
+        <div class="col-lg-4 col-6">
+            <x-adminlte-small-box title="{{ $statistics['users'] }}" text="Total Pengguna" icon="fas fa-users" theme="primary" />
+        </div>
+        <div class="col-lg-4 col-6">
+            <x-adminlte-small-box title="{{ $statistics['projects'] }}" text="Total Project" icon="fas fa-project-diagram" theme="success" url="{{ route('projects.index') }}" />
+        </div>
+        <div class="col-lg-4 col-6">
+            <x-adminlte-small-box title="{{ $statistics['admins'] }}" text="Administrator" icon="fas fa-user-shield" theme="warning" />
         </div>
     </div>
-</x-app-layout>
+
+    <x-adminlte-card title="Project Terbaru" theme="primary" icon="fas fa-list">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead><tr><th>Judul</th><th>Tema</th><th>Pemilik</th><th>Dibuat</th></tr></thead>
+                <tbody>
+                @forelse ($projects as $project)
+                    <tr>
+                        <td>{{ $project->judul }}</td>
+                        <td>{{ $project->tema_agent }}</td>
+                        <td>{{ $project->user->name }}</td>
+                        <td>{{ $project->created_at->format('d M Y') }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="4" class="text-center">Belum ada data project.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+    </x-adminlte-card>
+@stop
